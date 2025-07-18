@@ -40,7 +40,7 @@
     padding-bottom: 0.4rem;
   }
   .materia {
-    background: #ffb6c1; /* rosa claro para desbloqueadas */
+    background: #ffb6c1; /* rosa claro */
     margin: 0.3rem 0;
     padding: 0.5rem 0.8rem;
     border-radius: 8px;
@@ -59,8 +59,8 @@
     box-shadow: 0 0 10px #b3245799;
   }
   .materia.bloqueada {
-    background: #a0e7d6; /* verde agua claro para bloqueadas */
-    color: #20604f; /* verde oscuro suave */
+    background: #f2a0b6; /* rosa apagado */
+    color: #7a2640; /* rosa oscuro suave */
     cursor: not-allowed;
     font-style: italic;
     box-shadow: none;
@@ -72,14 +72,14 @@
     left: 105%;
     top: 50%;
     transform: translateY(-50%);
-    background: #33bba4;
+    background: #cc3366;
     color: white;
     padding: 8px 12px;
     border-radius: 8px;
     white-space: pre-line;
     z-index: 10;
     width: 180px;
-    box-shadow: 0 0 10px #33bba499;
+    box-shadow: 0 0 10px #cc336699;
     font-size: 0.9rem;
   }
 
@@ -88,11 +88,11 @@
     height: 10px;
   }
   .malla::-webkit-scrollbar-track {
-    background: #c0f0e9;
+    background: #ffd6e8;
     border-radius: 10px;
   }
   .malla::-webkit-scrollbar-thumb {
-    background: #33bba4;
+    background: #cc3366;
     border-radius: 10px;
   }
 </style>
@@ -207,7 +207,7 @@
 
   const mallaEl = document.getElementById("malla");
 
-  let aprobado = JSON.parse(localStorage.getItem("malla_aprobado_v1") || "{}");
+  let aprobado = JSON.parse(localStorage.getItem("malla_aprobado_v1")||"{}");
 
   function puedeAprobar(materiaId) {
     const prereqs = materiasData[materiaId].prereq;
@@ -231,7 +231,6 @@
           el.classList.remove("bloqueada");
           el.removeAttribute("data-tooltip");
           el.style.pointerEvents = "auto";
-          el.classList.remove("aprobada");
         } else {
           el.classList.add("bloqueada");
           const faltantes = prereqsFaltantes(id).map(x => materiasData[x].nombre).join("\n");
