@@ -8,57 +8,62 @@
   @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
   body {
     font-family: 'Montserrat', sans-serif;
-    background: #fff0f6;
+    background: #ffe6f0; /* rosa muy claro */
     margin: 0; padding: 1rem;
-    color: #5a2a42;
+    color: #800040; /* rosa oscuro */
   }
   h1 {
     text-align: center;
     margin-bottom: 1rem;
-    color: #b83e6e;
+    color: #cc3366; /* rosa fuerte */
   }
   .malla {
     display: flex;
     overflow-x: auto;
-    gap: 0.8rem;
+    gap: 1rem;
     padding-bottom: 1rem;
   }
   .semestre {
-    min-width: 220px;
-    background: #ffe3ec;
-    border-radius: 8px;
-    padding: 0.5rem;
-    box-shadow: 0 0 8px #f6c1d8aa;
+    min-width: 230px;
+    background: #ffccdd; /* rosa suave */
+    border-radius: 12px;
+    padding: 0.7rem 0.9rem;
+    box-shadow: 0 0 12px #ff99bbaa;
     flex-shrink: 0;
   }
   .semestre h2 {
     text-align: center;
     font-weight: 600;
-    margin-bottom: 0.7rem;
-    color: #b03a5d;
-    border-bottom: 2px solid #b83e6e;
-    padding-bottom: 0.3rem;
+    margin-bottom: 0.8rem;
+    color: #b32457; /* rosa medio */
+    border-bottom: 2px solid #cc3366;
+    padding-bottom: 0.4rem;
   }
   .materia {
-    background: #fcd8e7;
-    margin: 0.25rem 0;
-    padding: 0.5rem 0.7rem;
-    border-radius: 6px;
+    background: #ffb6c1; /* rosa claro */
+    margin: 0.3rem 0;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
     cursor: pointer;
     position: relative;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
     user-select: none;
+    color: #660033; /* rosa oscuro */
+    font-weight: 500;
+    box-shadow: inset 0 0 5px #ff99bbaa;
   }
   .materia.aprobada {
-    background: #a73e5c;
+    background: #b32457; /* rosa fuerte */
     color: white;
-    font-weight: 600;
+    font-weight: 700;
+    box-shadow: 0 0 10px #b3245799;
   }
   .materia.bloqueada {
-    background: #f9b6cb;
-    color: #6b2e42;
+    background: #f2a0b6; /* rosa apagado */
+    color: #7a2640; /* rosa oscuro suave */
     cursor: not-allowed;
     font-style: italic;
+    box-shadow: none;
   }
   /* Tooltip styling */
   .materia.bloqueada:hover::after {
@@ -67,15 +72,28 @@
     left: 105%;
     top: 50%;
     transform: translateY(-50%);
-    background: #b83e6e;
+    background: #cc3366;
     color: white;
-    padding: 6px 10px;
-    border-radius: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
     white-space: pre-line;
     z-index: 10;
-    width: 160px;
-    box-shadow: 0 0 6px #b83e6eaa;
-    font-size: 0.85rem;
+    width: 180px;
+    box-shadow: 0 0 10px #cc336699;
+    font-size: 0.9rem;
+  }
+
+  /* Scrollbar para malla */
+  .malla::-webkit-scrollbar {
+    height: 10px;
+  }
+  .malla::-webkit-scrollbar-track {
+    background: #ffd6e8;
+    border-radius: 10px;
+  }
+  .malla::-webkit-scrollbar-thumb {
+    background: #cc3366;
+    border-radius: 10px;
   }
 </style>
 </head>
@@ -89,20 +107,13 @@
 
 <script>
 (() => {
-  // Datos materias con prerrequisitos
-  // Cada materia tiene id único y array con ids de requisitos
-  // Para tooltip mostramos nombres de requisitos que faltan
-
   const materiasData = {
-    // Semestre 1
     "quimica-general-i": { nombre: "Química General I", prereq: [] },
     "biologia-celular-y-molecular": { nombre: "Biología Celular y Molecular", prereq: [] },
     "morfologia-humana-i": { nombre: "Morfología Humana I", prereq: [] },
     "matematica-i": { nombre: "Matemática I", prereq: [] },
     "introduccion-a-la-farmacia-y-las-ciencias-i": { nombre: "Introducción a la Farmacia y las Ciencias I", prereq: [] },
     "aprendizaje-eficiente": { nombre: "Aprendizaje Eficiente", prereq: [] },
-
-    // Semestre 2
     "quimica-general-ii": { nombre: "Química General II", prereq: ["quimica-general-i"] },
     "bioquimica-general-y-molecular": { nombre: "Bioquímica General y Molecular", prereq: ["biologia-celular-y-molecular"] },
     "morfologia-humana-ii": { nombre: "Morfología Humana II", prereq: ["morfologia-humana-i"] },
@@ -110,8 +121,6 @@
     "fisica": { nombre: "Física", prereq: ["matematica-i"] },
     "introduccion-a-la-farmacia-y-las-ciencias-ii": { nombre: "Introducción a la Farmacia y las Ciencias II", prereq: ["introduccion-a-la-farmacia-y-las-ciencias-i"] },
     "ingles-i": { nombre: "Inglés I", prereq: [] },
-
-    // Semestre 3
     "quimica-analitica": { nombre: "Química Analítica", prereq: ["quimica-general-ii"] },
     "quimica-organica-i": { nombre: "Química Orgánica I", prereq: ["quimica-general-ii"] },
     "fisiologia-i": { nombre: "Fisiología I", prereq: ["bioquimica-general-y-molecular"] },
@@ -119,8 +128,6 @@
     "fisicoquimica": { nombre: "Fisicoquímica", prereq: ["quimica-general-ii", "fisica"] },
     "taller-de-iniciacion-farmaceutica": { nombre: "Taller de Iniciación Farmacéutica", prereq: ["introduccion-a-la-farmacia-y-las-ciencias-ii"] },
     "ingles-ii": { nombre: "Inglés II", prereq: ["ingles-i"] },
-
-    // Semestre 4
     "analisis-instrumental": { nombre: "Análisis Instrumental", prereq: ["fisicoquimica", "quimica-analitica"] },
     "quimica-organica-ii": { nombre: "Química Orgánica II", prereq: ["quimica-organica-i"] },
     "fisiologia-ii": { nombre: "Fisiología II", prereq: ["fisiologia-i"] },
@@ -131,8 +138,6 @@
       "quimica-general-ii", "bioquimica-general-y-molecular", "morfologia-humana-ii", "matematica-ii", "fisica", "introduccion-a-la-farmacia-y-las-ciencias-ii",
       "quimica-analitica", "quimica-organica-i", "fisiologia-i", "bioestadisticas", "fisicoquimica", "taller-de-iniciacion-farmaceutica", "ingles-i", "ingles-ii"
     ]},
-
-    // Semestre 5
     "analisis-de-medicamentos": { nombre: "Análisis de Medicamentos", prereq: ["analisis-instrumental"] },
     "bioquimica-clinica": { nombre: "Bioquímica Clínica", prereq: ["quimica-organica-ii"] },
     "fisiopatologia-i": { nombre: "Fisiopatología I", prereq: ["fisiologia-ii", "genetica-y-genomica"] },
@@ -140,8 +145,6 @@
     "epidemiologia": { nombre: "Epidemiología", prereq: [] },
     "farmacologia-i": { nombre: "Farmacología I", prereq: ["fisiologia-ii", "genetica-y-genomica"] },
     "introduccion-a-la-fe": { nombre: "Introducción a la Fe", prereq: [] },
-
-    // Semestre 6
     "farmacoquimica-i": { nombre: "Farmacoquímica I", prereq: ["bioquimica-clinica"] },
     "farmacognosia": { nombre: "Farmacognosia", prereq: ["farmacologia-i"] },
     "fisiopatologia-ii": { nombre: "Fisiopatología II", prereq: ["fisiopatologia-i"] },
@@ -149,16 +152,12 @@
     "relaciones-interpersonales": { nombre: "Relaciones Interpersonales", prereq: [] },
     "farmacologia-ii": { nombre: "Farmacología II", prereq: ["farmacologia-i"] },
     "etica-cristiana": { nombre: "Ética Cristiana", prereq: [] },
-
-    // Semestre 7
     "farmacoquimica-ii": { nombre: "Farmacoquímica II", prereq: ["farmacoquimica-i"] },
     "toxicologia": { nombre: "Toxicología", prereq: ["farmacologia-ii"] },
     "tecnologia-farmaceutica": { nombre: "Tecnología Farmacéutica", prereq: ["farmacognosia"] },
     "gestion-farmaceutica": { nombre: "Gestión Farmacéutica", prereq: ["relaciones-interpersonales"] },
     "iniciacion-a-la-farmacia-clinica": { nombre: "Iniciación a la Farmacia Clínica", prereq: ["fisiopatologia-ii", "microbiologia-y-parasitologia", "farmacologia-ii"] },
     "certificacion-i": { nombre: "Certificación I", prereq: [] },
-
-    // Semestre 8
     "nutricion-clinica": { nombre: "Nutrición Clínica", prereq: ["iniciacion-a-la-farmacia-clinica"] },
     "electivo-i": { nombre: "Electivo I", prereq: [] },
     "tecnologia-farmaceutica-ii": { nombre: "Tecnología Farmacéutica II", prereq: ["tecnologia-farmaceutica"] },
@@ -166,27 +165,19 @@
     "biofarmacia-y-farmacocinetica-clinica": { nombre: "Biofarmacia y Farmacocinética Clínica", prereq: ["iniciacion-a-la-farmacia-clinica"] },
     "farmacia-clinica-i": { nombre: "Farmacia Clínica I", prereq: ["iniciacion-a-la-farmacia-clinica", "toxicologia"] },
     "legislacion-farmaceutica": { nombre: "Legislación Farmacéutica", prereq: [] },
-
-    // Semestre 9
     "electivo-ii": { nombre: "Electivo II", prereq: ["electivo-i"] },
     "farmacia-asistencial": { nombre: "Farmacia Asistencial", prereq: ["nutricion-clinica", "tecnologia-farmaceutica-ii"] },
     "manejo-de-bases-de-datos": { nombre: "Manejo de Bases de Datos", prereq: [] },
     "asuntos-regulatorios": { nombre: "Asuntos Regulatorios", prereq: [] },
     "farmacia-clinica-ii": { nombre: "Farmacia Clínica II", prereq: ["biofarmacia-y-farmacocinetica-clinica", "farmacia-clinica-i"] },
     "certificacion-ii": { nombre: "Certificación II", prereq: [] },
-
-    // Semestre 10
     "electivo-iii": { nombre: "Electivo III", prereq: ["electivo-ii"] },
     "farmacovigilancia-farmacoeconomia": { nombre: "Farmacovigilancia-Farmacoeconomía", prereq: ["farmacia-asistencial"] },
     "farmacia-clinica-iii": { nombre: "Farmacia Clínica III", prereq: ["farmacia-clinica-ii"] },
     "atencion-farmaceutica": { nombre: "Atención Farmacéutica", prereq: ["farmacia-clinica-ii", "farmacia-asistencial"] },
     "metodologia-de-proyectos": { nombre: "Metodología de Proyectos", prereq: [] },
     "certificacion-iii": { nombre: "Certificación III", prereq: [] },
-
-    // Semestre 11
     "practica-profesional": { nombre: "Práctica Profesional", prereq: [
-      // requiere todas las actividades hasta semestre 10
-      // Simplifico: todas las materias menos practica profesional
       "quimica-general-i", "biologia-celular-y-molecular", "morfologia-humana-i", "matematica-i", "introduccion-a-la-farmacia-y-las-ciencias-i", "aprendizaje-eficiente",
       "quimica-general-ii", "bioquimica-general-y-molecular", "morfologia-humana-ii", "matematica-ii", "fisica", "introduccion-a-la-farmacia-y-las-ciencias-ii", "ingles-i",
       "quimica-analitica", "quimica-organica-i", "fisiologia-i", "bioestadisticas", "fisicoquimica", "taller-de-iniciacion-farmaceutica", "ingles-ii",
@@ -200,7 +191,6 @@
     ] }
   };
 
-  // Semestres en orden
   const semestres = [
     ["quimica-general-i","biologia-celular-y-molecular","morfologia-humana-i","matematica-i","introduccion-a-la-farmacia-y-las-ciencias-i","aprendizaje-eficiente"],
     ["quimica-general-ii","bioquimica-general-y-molecular","morfologia-humana-ii","matematica-ii","fisica","introduccion-a-la-farmacia-y-las-ciencias-ii","ingles-i"],
@@ -217,21 +207,17 @@
 
   const mallaEl = document.getElementById("malla");
 
-  // Carga estado aprobado de localStorage
   let aprobado = JSON.parse(localStorage.getItem("malla_aprobado_v1")||"{}");
 
-  // Función que verifica si todos requisitos están aprobados
   function puedeAprobar(materiaId) {
     const prereqs = materiasData[materiaId].prereq;
     return prereqs.every(p => aprobado[p]);
   }
 
-  // Función que devuelve los requisitos no aprobados
   function prereqsFaltantes(materiaId) {
     return materiasData[materiaId].prereq.filter(p => !aprobado[p]);
   }
 
-  // Actualiza la UI, bloquea y desbloquea materias
   function actualizarUI() {
     document.querySelectorAll(".materia").forEach(el => {
       const id = el.dataset.id;
@@ -242,14 +228,11 @@
         el.style.pointerEvents = "auto";
       } else {
         if (puedeAprobar(id)) {
-          // Puede desbloquear
           el.classList.remove("bloqueada");
           el.removeAttribute("data-tooltip");
           el.style.pointerEvents = "auto";
         } else {
-          // Bloqueada
           el.classList.add("bloqueada");
-          // Tooltip con lista de materias faltantes por nombre
           const faltantes = prereqsFaltantes(id).map(x => materiasData[x].nombre).join("\n");
           el.setAttribute("data-tooltip", `Faltan aprobar:\n${faltantes}`);
           el.style.pointerEvents = "none";
@@ -259,7 +242,6 @@
     });
   }
 
-  // Crear columnas semestre
   semestres.forEach((listaMaterias, i) => {
     const col = document.createElement("div");
     col.className = "semestre";
@@ -270,9 +252,8 @@
       div.dataset.id = id;
       div.title = materiasData[id].nombre;
       div.textContent = materiasData[id].nombre;
-      // Click para toggle aprobado si no bloqueado
       div.addEventListener("click", () => {
-        if (div.classList.contains("bloqueada")) return; // no hace nada si bloqueada
+        if (div.classList.contains("bloqueada")) return;
         aprobado[id] = !aprobado[id];
         localStorage.setItem("malla_aprobado_v1", JSON.stringify(aprobado));
         actualizarUI();
@@ -282,9 +263,7 @@
     mallaEl.appendChild(col);
   });
 
-  // Primera actualización UI
   actualizarUI();
-
 })();
 </script>
 
