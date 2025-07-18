@@ -1,271 +1,235 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Malla Curricular Química y Farmacia UCM</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background: #ffe6f0; /* rosa muy claro */
-    margin: 0; padding: 1rem;
-    color: #800040; /* rosa oscuro */
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #cc3366; /* rosa fuerte */
-  }
-  .malla {
-    display: flex;
-    overflow-x: auto;
-    gap: 1rem;
-    padding-bottom: 1rem;
-  }
-  .semestre {
-    min-width: 230px;
-    background: #ffccdd; /* rosa suave */
-    border-radius: 12px;
-    padding: 0.7rem 0.9rem;
-    box-shadow: 0 0 12px #ff99bbaa;
-    flex-shrink: 0;
-  }
-  .semestre h2 {
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 0.8rem;
-    color: #b32457; /* rosa medio */
-    border-bottom: 2px solid #cc3366;
-    padding-bottom: 0.4rem;
-  }
-  .materia {
-    background: #ffb6c1; /* rosa claro */
-    margin: 0.3rem 0;
-    padding: 0.5rem 0.8rem;
-    border-radius: 8px;
-    cursor: pointer;
-    position: relative;
-    transition: background-color 0.25s ease, color 0.25s ease;
-    user-select: none;
-    color: #660033; /* rosa oscuro */
-    font-weight: 500;
-    box-shadow: inset 0 0 5px #ff99bbaa;
-  }
-  .materia.aprobada {
-    background: #b32457; /* rosa fuerte */
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 0 10px #b3245799;
-  }
-  .materia.bloqueada {
-    background: #f2a0b6; /* rosa apagado */
-    color: #7a2640; /* rosa oscuro suave */
-    cursor: not-allowed;
-    font-style: italic;
-    box-shadow: none;
-  }
-  /* Tooltip styling */
-  .materia.bloqueada:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 105%;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #cc3366;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    white-space: pre-line;
-    z-index: 10;
-    width: 180px;
-    box-shadow: 0 0 10px #cc336699;
-    font-size: 0.9rem;
-  }
+  <meta charset="UTF-8" />
+  <title>Malla Química y Farmacia UCM</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdf6f9;
+      color: #333;
+      margin: 0;
+      padding: 1rem;
+    }
 
-  /* Scrollbar para malla */
-  .malla::-webkit-scrollbar {
-    height: 10px;
-  }
-  .malla::-webkit-scrollbar-track {
-    background: #ffd6e8;
-    border-radius: 10px;
-  }
-  .malla::-webkit-scrollbar-thumb {
-    background: #cc3366;
-    border-radius: 10px;
-  }
-</style>
+    h1 {
+      text-align: center;
+      color: #a052aa;
+    }
+
+    .malla {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .semestre {
+      background: #fff;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0 10px #e3e3e3;
+      width: 240px;
+    }
+
+    .semestre h2 {
+      text-align: center;
+      color: #7a378b;
+    }
+
+    .materia {
+      margin: 0.4rem 0;
+      padding: 0.6rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      user-select: none;
+      font-weight: 500;
+    }
+
+    .materia:hover {
+      filter: brightness(0.95);
+    }
+
+    .materia.aprobada {
+      background: #f78fb3; /* rosado */
+      color: white;
+      text-decoration: line-through;
+      font-weight: bold;
+    }
+
+    .materia.bloqueada {
+      background: #d3d3d3; /* gris claro */
+      color: #666;
+      cursor: not-allowed;
+    }
+
+    .materia:not(.aprobada):not(.bloqueada) {
+      background: #e0bbf8; /* morado claro */
+      color: #4b006e;
+    }
+
+    .materia[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      white-space: pre-line;
+      position: absolute;
+      background: #444;
+      color: #fff;
+      padding: 0.4rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      top: 100%;
+      left: 0;
+      transform: translateY(5px);
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
+  <h1>Malla Curricular - Química y Farmacia UCM</h1>
+  <div class="malla" id="malla"></div>
 
-<h1>Malla Curricular Química y Farmacia (UCM)</h1>
+  <script>
+    const materiasData = {
+      "qg1": { nombre: "Química General I", prereq: [] },
+      "bioCel": { nombre: "Biología Celular y Molecular", prereq: [] },
+      "morfo1": { nombre: "Morfología Humana I", prereq: [] },
+      "mate1": { nombre: "Matemática I", prereq: [] },
+      "intro1": { nombre: "Introducción a la Farmacia I", prereq: [] },
+      "aprEff": { nombre: "Aprendizaje Eficiente", prereq: [] },
+      "qg2": { nombre: "Química General II", prereq: ["qg1"] },
+      "bioq": { nombre: "Bioquímica General y Molecular", prereq: ["bioCel"] },
+      "morfo2": { nombre: "Morfología Humana II", prereq: ["morfo1"] },
+      "mate2": { nombre: "Matemática II", prereq: ["mate1"] },
+      "fisica": { nombre: "Física", prereq: ["mate1"] },
+      "intro2": { nombre: "Introducción a la Farmacia II", prereq: ["intro1"] },
+      "ingles1": { nombre: "Inglés I", prereq: [] },
+      "qa": { nombre: "Química Analítica", prereq: ["qg2"] },
+      "qo1": { nombre: "Química Orgánica I", prereq: ["qg2"] },
+      "fisio1": { nombre: "Fisiología I", prereq: ["bioq"] },
+      "bioest": { nombre: "Bioestadísticas", prereq: ["mate2"] },
+      "fisicoq": { nombre: "Fisicoquímica", prereq: ["qg2", "fisica"] },
+      "taller1": { nombre: "Taller Iniciación Farmacéutica", prereq: ["intro2"] },
+      "ingles2": { nombre: "Inglés II", prereq: ["ingles1"] },
+      "ai": { nombre: "Análisis Instrumental", prereq: ["fisicoq", "qa"] },
+      "qo2": { nombre: "Química Orgánica II", prereq: ["qo1"] },
+      "fisio2": { nombre: "Fisiología II", prereq: ["fisio1"] },
+      "inmuno": { nombre: "Elementos Inmunes", prereq: ["bioq"] },
+      "gen": { nombre: "Genética y Genómica", prereq: ["bioq"] },
+      "taller2": { nombre: "Taller Formación Farmacéutica", prereq: ["qa", "qo1", "fisio1", "bioest", "fisicoq", "taller1", "ingles2"] },
+      "analMed": { nombre: "Análisis de Medicamentos", prereq: ["ai"] },
+      "bioqClin": { nombre: "Bioquímica Clínica", prereq: ["qo2"] },
+      "fisiop1": { nombre: "Fisiopatología I", prereq: ["fisio2", "gen"] },
+      "microBact": { nombre: "Microbiología y Bacteriología", prereq: ["inmuno"] },
+      "epidem": { nombre: "Epidemiología", prereq: [] },
+      "farma1": { nombre: "Farmacología I", prereq: ["fisio2", "gen"] },
+      "fe": { nombre: "Introducción a la Fe", prereq: [] },
+      "farmq1": { nombre: "Farmacoquímica I", prereq: ["bioqClin"] },
+      "farcog": { nombre: "Farmacognosia", prereq: ["farma1"] },
+      "fisiop2": { nombre: "Fisiopatología II", prereq: ["fisiop1"] },
+      "microPara": { nombre: "Microbiología y Parasitología", prereq: ["microBact"] },
+      "relInt": { nombre: "Relaciones Interpersonales", prereq: [] },
+      "farma2": { nombre: "Farmacología II", prereq: ["farma1"] },
+      "etica": { nombre: "Ética Cristiana", prereq: [] },
+      "farmq2": { nombre: "Farmacoquímica II", prereq: ["farmq1"] },
+      "tox": { nombre: "Toxicología", prereq: ["farma2"] },
+      "tecFarm1": { nombre: "Tecnología Farmacéutica I", prereq: ["farcog"] },
+      "gestion": { nombre: "Gestión Farmacéutica", prereq: ["relInt"] },
+      "initClin": { nombre: "Iniciación a la Farmacia Clínica", prereq: ["fisiop2", "microPara", "farma2"] },
+      "cert1": { nombre: "Certificación I", prereq: [] },
+      "nutri": { nombre: "Nutrición Clínica", prereq: ["initClin"] },
+      "elect1": { nombre: "Electivo I", prereq: [] },
+      "tecFarm2": { nombre: "Tecnología Farmacéutica II", prereq: ["tecFarm1"] },
+      "comp": { nombre: "Diseño Computacional", prereq: [] },
+      "biofarma": { nombre: "Biofarmacia y Farmacocinética Clínica", prereq: ["initClin"] },
+      "clin1": { nombre: "Farmacia Clínica I", prereq: ["initClin", "tox"] },
+      "leg": { nombre: "Legislación Farmacéutica", prereq: [] },
+      "elect2": { nombre: "Electivo II", prereq: ["elect1"] },
+      "asis": { nombre: "Farmacia Asistencial", prereq: ["nutri", "tecFarm2"] },
+      "bd": { nombre: "Manejo de Bases de Datos", prereq: [] },
+      "regul": { nombre: "Asuntos Regulatorios", prereq: [] },
+      "clin2": { nombre: "Farmacia Clínica II", prereq: ["biofarma", "clin1"] },
+      "cert2": { nombre: "Certificación II", prereq: [] },
+      "elect3": { nombre: "Electivo III", prereq: ["elect2"] },
+      "vigilancia": { nombre: "Farmacovigilancia y Farmacoeconomía", prereq: ["asis"] },
+      "clin3": { nombre: "Farmacia Clínica III", prereq: ["clin2"] },
+      "atencion": { nombre: "Atención Farmacéutica", prereq: ["clin2", "asis"] },
+      "metod": { nombre: "Metodología de Proyectos", prereq: [] },
+      "cert3": { nombre: "Certificación III", prereq: [] },
+      "practica": { nombre: "Práctica Profesional", prereq: ["clin3", "cert3", "atencion", "vigilancia", "metod", "elect3"] }
+    };
 
-<div class="malla" id="malla">
-  <!-- Columnas semestre se generan con JS -->
-</div>
+    const semestres = [
+      ["qg1", "bioCel", "morfo1", "mate1", "intro1", "aprEff"],
+      ["qg2", "bioq", "morfo2", "mate2", "fisica", "intro2", "ingles1"],
+      ["qa", "qo1", "fisio1", "bioest", "fisicoq", "taller1", "ingles2"],
+      ["ai", "qo2", "fisio2", "inmuno", "gen", "taller2"],
+      ["analMed", "bioqClin", "fisiop1", "microBact", "epidem", "farma1", "fe"],
+      ["farmq1", "farcog", "fisiop2", "microPara", "relInt", "farma2", "etica"],
+      ["farmq2", "tox", "tecFarm1", "gestion", "initClin", "cert1"],
+      ["nutri", "elect1", "tecFarm2", "comp", "biofarma", "clin1", "leg"],
+      ["elect2", "asis", "bd", "regul", "clin2", "cert2"],
+      ["elect3", "vigilancia", "clin3", "atencion", "metod", "cert3"],
+      ["practica"]
+    ];
 
-<script>
-(() => {
-  const materiasData = {
-    "quimica-general-i": { nombre: "Química General I", prereq: [] },
-    "biologia-celular-y-molecular": { nombre: "Biología Celular y Molecular", prereq: [] },
-    "morfologia-humana-i": { nombre: "Morfología Humana I", prereq: [] },
-    "matematica-i": { nombre: "Matemática I", prereq: [] },
-    "introduccion-a-la-farmacia-y-las-ciencias-i": { nombre: "Introducción a la Farmacia y las Ciencias I", prereq: [] },
-    "aprendizaje-eficiente": { nombre: "Aprendizaje Eficiente", prereq: [] },
-    "quimica-general-ii": { nombre: "Química General II", prereq: ["quimica-general-i"] },
-    "bioquimica-general-y-molecular": { nombre: "Bioquímica General y Molecular", prereq: ["biologia-celular-y-molecular"] },
-    "morfologia-humana-ii": { nombre: "Morfología Humana II", prereq: ["morfologia-humana-i"] },
-    "matematica-ii": { nombre: "Matemática II", prereq: ["matematica-i"] },
-    "fisica": { nombre: "Física", prereq: ["matematica-i"] },
-    "introduccion-a-la-farmacia-y-las-ciencias-ii": { nombre: "Introducción a la Farmacia y las Ciencias II", prereq: ["introduccion-a-la-farmacia-y-las-ciencias-i"] },
-    "ingles-i": { nombre: "Inglés I", prereq: [] },
-    "quimica-analitica": { nombre: "Química Analítica", prereq: ["quimica-general-ii"] },
-    "quimica-organica-i": { nombre: "Química Orgánica I", prereq: ["quimica-general-ii"] },
-    "fisiologia-i": { nombre: "Fisiología I", prereq: ["bioquimica-general-y-molecular"] },
-    "bioestadisticas": { nombre: "Bioestadísticas", prereq: ["matematica-ii"] },
-    "fisicoquimica": { nombre: "Fisicoquímica", prereq: ["quimica-general-ii", "fisica"] },
-    "taller-de-iniciacion-farmaceutica": { nombre: "Taller de Iniciación Farmacéutica", prereq: ["introduccion-a-la-farmacia-y-las-ciencias-ii"] },
-    "ingles-ii": { nombre: "Inglés II", prereq: ["ingles-i"] },
-    "analisis-instrumental": { nombre: "Análisis Instrumental", prereq: ["fisicoquimica", "quimica-analitica"] },
-    "quimica-organica-ii": { nombre: "Química Orgánica II", prereq: ["quimica-organica-i"] },
-    "fisiologia-ii": { nombre: "Fisiología II", prereq: ["fisiologia-i"] },
-    "elementos-inmunes": { nombre: "Elementos Inmunes", prereq: ["bioquimica-general-y-molecular"] },
-    "genetica-y-genomica": { nombre: "Genética y Genómica", prereq: ["bioquimica-general-y-molecular"] },
-    "taller-de-formacion-farmaceutica": { nombre: "Taller de Formación Farmacéutica", prereq: [
-      "quimica-general-i", "biologia-celular-y-molecular", "morfologia-humana-i", "matematica-i", "introduccion-a-la-farmacia-y-las-ciencias-i",
-      "quimica-general-ii", "bioquimica-general-y-molecular", "morfologia-humana-ii", "matematica-ii", "fisica", "introduccion-a-la-farmacia-y-las-ciencias-ii",
-      "quimica-analitica", "quimica-organica-i", "fisiologia-i", "bioestadisticas", "fisicoquimica", "taller-de-iniciacion-farmaceutica", "ingles-i", "ingles-ii"
-    ]},
-    "analisis-de-medicamentos": { nombre: "Análisis de Medicamentos", prereq: ["analisis-instrumental"] },
-    "bioquimica-clinica": { nombre: "Bioquímica Clínica", prereq: ["quimica-organica-ii"] },
-    "fisiopatologia-i": { nombre: "Fisiopatología I", prereq: ["fisiologia-ii", "genetica-y-genomica"] },
-    "microbiologia-y-bacteriologia": { nombre: "Microbiología y Bacteriología", prereq: ["elementos-inmunes"] },
-    "epidemiologia": { nombre: "Epidemiología", prereq: [] },
-    "farmacologia-i": { nombre: "Farmacología I", prereq: ["fisiologia-ii", "genetica-y-genomica"] },
-    "introduccion-a-la-fe": { nombre: "Introducción a la Fe", prereq: [] },
-    "farmacoquimica-i": { nombre: "Farmacoquímica I", prereq: ["bioquimica-clinica"] },
-    "farmacognosia": { nombre: "Farmacognosia", prereq: ["farmacologia-i"] },
-    "fisiopatologia-ii": { nombre: "Fisiopatología II", prereq: ["fisiopatologia-i"] },
-    "microbiologia-y-parasitologia": { nombre: "Microbiología y Parasitología", prereq: ["microbiologia-y-bacteriologia"] },
-    "relaciones-interpersonales": { nombre: "Relaciones Interpersonales", prereq: [] },
-    "farmacologia-ii": { nombre: "Farmacología II", prereq: ["farmacologia-i"] },
-    "etica-cristiana": { nombre: "Ética Cristiana", prereq: [] },
-    "farmacoquimica-ii": { nombre: "Farmacoquímica II", prereq: ["farmacoquimica-i"] },
-    "toxicologia": { nombre: "Toxicología", prereq: ["farmacologia-ii"] },
-    "tecnologia-farmaceutica": { nombre: "Tecnología Farmacéutica", prereq: ["farmacognosia"] },
-    "gestion-farmaceutica": { nombre: "Gestión Farmacéutica", prereq: ["relaciones-interpersonales"] },
-    "iniciacion-a-la-farmacia-clinica": { nombre: "Iniciación a la Farmacia Clínica", prereq: ["fisiopatologia-ii", "microbiologia-y-parasitologia", "farmacologia-ii"] },
-    "certificacion-i": { nombre: "Certificación I", prereq: [] },
-    "nutricion-clinica": { nombre: "Nutrición Clínica", prereq: ["iniciacion-a-la-farmacia-clinica"] },
-    "electivo-i": { nombre: "Electivo I", prereq: [] },
-    "tecnologia-farmaceutica-ii": { nombre: "Tecnología Farmacéutica II", prereq: ["tecnologia-farmaceutica"] },
-    "diseno-computacional": { nombre: "Diseño Computacional", prereq: [] },
-    "biofarmacia-y-farmacocinetica-clinica": { nombre: "Biofarmacia y Farmacocinética Clínica", prereq: ["iniciacion-a-la-farmacia-clinica"] },
-    "farmacia-clinica-i": { nombre: "Farmacia Clínica I", prereq: ["iniciacion-a-la-farmacia-clinica", "toxicologia"] },
-    "legislacion-farmaceutica": { nombre: "Legislación Farmacéutica", prereq: [] },
-    "electivo-ii": { nombre: "Electivo II", prereq: ["electivo-i"] },
-    "farmacia-asistencial": { nombre: "Farmacia Asistencial", prereq: ["nutricion-clinica", "tecnologia-farmaceutica-ii"] },
-    "manejo-de-bases-de-datos": { nombre: "Manejo de Bases de Datos", prereq: [] },
-    "asuntos-regulatorios": { nombre: "Asuntos Regulatorios", prereq: [] },
-    "farmacia-clinica-ii": { nombre: "Farmacia Clínica II", prereq: ["biofarmacia-y-farmacocinetica-clinica", "farmacia-clinica-i"] },
-    "certificacion-ii": { nombre: "Certificación II", prereq: [] },
-    "electivo-iii": { nombre: "Electivo III", prereq: ["electivo-ii"] },
-    "farmacovigilancia-farmacoeconomia": { nombre: "Farmacovigilancia-Farmacoeconomía", prereq: ["farmacia-asistencial"] },
-    "farmacia-clinica-iii": { nombre: "Farmacia Clínica III", prereq: ["farmacia-clinica-ii"] },
-    "atencion-farmaceutica": { nombre: "Atención Farmacéutica", prereq: ["farmacia-clinica-ii", "farmacia-asistencial"] },
-    "metodologia-de-proyectos": { nombre: "Metodología de Proyectos", prereq: [] },
-    "certificacion-iii": { nombre: "Certificación III", prereq: [] },
-    "practica-profesional": { nombre: "Práctica Profesional", prereq: [
-      "quimica-general-i", "biologia-celular-y-molecular", "morfologia-humana-i", "matematica-i", "introduccion-a-la-farmacia-y-las-ciencias-i", "aprendizaje-eficiente",
-      "quimica-general-ii", "bioquimica-general-y-molecular", "morfologia-humana-ii", "matematica-ii", "fisica", "introduccion-a-la-farmacia-y-las-ciencias-ii", "ingles-i",
-      "quimica-analitica", "quimica-organica-i", "fisiologia-i", "bioestadisticas", "fisicoquimica", "taller-de-iniciacion-farmaceutica", "ingles-ii",
-      "analisis-instrumental", "quimica-organica-ii", "fisiologia-ii", "elementos-inmunes", "genetica-y-genomica", "taller-de-formacion-farmaceutica",
-      "analisis-de-medicamentos", "bioquimica-clinica", "fisiopatologia-i", "microbiologia-y-bacteriologia", "epidemiologia", "farmacologia-i", "introduccion-a-la-fe",
-      "farmacoquimica-i", "farmacognosia", "fisiopatologia-ii", "microbiologia-y-parasitologia", "relaciones-interpersonales", "farmacologia-ii", "etica-cristiana",
-      "farmacoquimica-ii", "toxicologia", "tecnologia-farmaceutica", "gestion-farmaceutica", "iniciacion-a-la-farmacia-clinica", "certificacion-i",
-      "nutricion-clinica", "electivo-i", "tecnologia-farmaceutica-ii", "diseno-computacional", "biofarmacia-y-farmacocinetica-clinica", "farmacia-clinica-i", "legislacion-farmaceutica",
-      "electivo-ii", "farmacia-asistencial", "manejo-de-bases-de-datos", "asuntos-regulatorios", "farmacia-clinica-ii", "certificacion-ii",
-      "electivo-iii", "farmacovigilancia-farmacoeconomia", "farmacia-clinica-iii", "atencion-farmaceutica", "metodologia-de-proyectos", "certificacion-iii"
-    ] }
-  };
+    const mallaEl = document.getElementById("malla");
+    let aprobado = JSON.parse(localStorage.getItem("malla_aprobado_v1") || "{}");
 
-  const semestres = [
-    ["quimica-general-i","biologia-celular-y-molecular","morfologia-humana-i","matematica-i","introduccion-a-la-farmacia-y-las-ciencias-i","aprendizaje-eficiente"],
-    ["quimica-general-ii","bioquimica-general-y-molecular","morfologia-humana-ii","matematica-ii","fisica","introduccion-a-la-farmacia-y-las-ciencias-ii","ingles-i"],
-    ["quimica-analitica","quimica-organica-i","fisiologia-i","bioestadisticas","fisicoquimica","taller-de-iniciacion-farmaceutica","ingles-ii"],
-    ["analisis-instrumental","quimica-organica-ii","fisiologia-ii","elementos-inmunes","genetica-y-genomica","taller-de-formacion-farmaceutica"],
-    ["analisis-de-medicamentos","bioquimica-clinica","fisiopatologia-i","microbiologia-y-bacteriologia","epidemiologia","farmacologia-i","introduccion-a-la-fe"],
-    ["farmacoquimica-i","farmacognosia","fisiopatologia-ii","microbiologia-y-parasitologia","relaciones-interpersonales","farmacologia-ii","etica-cristiana"],
-    ["farmacoquimica-ii","toxicologia","tecnologia-farmaceutica","gestion-farmaceutica","iniciacion-a-la-farmacia-clinica","certificacion-i"],
-    ["nutricion-clinica","electivo-i","tecnologia-farmaceutica-ii","diseno-computacional","biofarmacia-y-farmacocinetica-clinica","farmacia-clinica-i","legislacion-farmaceutica"],
-    ["electivo-ii","farmacia-asistencial","manejo-de-bases-de-datos","asuntos-regulatorios","farmacia-clinica-ii","certificacion-ii"],
-    ["electivo-iii","farmacovigilancia-farmacoeconomia","farmacia-clinica-iii","atencion-farmaceutica","metodologia-de-proyectos","certificacion-iii"],
-    ["practica-profesional"]
-  ];
+    function puedeAprobar(id) {
+      return materiasData[id].prereq.every(p => aprobado[p]);
+    }
 
-  const mallaEl = document.getElementById("malla");
+    function prereqsFaltantes(id) {
+      return materiasData[id].prereq.filter(p => !aprobado[p]);
+    }
 
-  let aprobado = JSON.parse(localStorage.getItem("malla_aprobado_v1")||"{}");
-
-  function puedeAprobar(materiaId) {
-    const prereqs = materiasData[materiaId].prereq;
-    return prereqs.every(p => aprobado[p]);
-  }
-
-  function prereqsFaltantes(materiaId) {
-    return materiasData[materiaId].prereq.filter(p => !aprobado[p]);
-  }
-
-  function actualizarUI() {
-    document.querySelectorAll(".materia").forEach(el => {
-      const id = el.dataset.id;
-      if (aprobado[id]) {
-        el.classList.add("aprobada");
-        el.classList.remove("bloqueada");
-        el.removeAttribute("data-tooltip");
-        el.style.pointerEvents = "auto";
-      } else {
-        if (puedeAprobar(id)) {
+    function actualizarUI() {
+      document.querySelectorAll(".materia").forEach(el => {
+        const id = el.dataset.id;
+        if (aprobado[id]) {
+          el.classList.add("aprobada");
           el.classList.remove("bloqueada");
+          el.removeAttribute("data-tooltip");
+          el.style.pointerEvents = "auto";
+        } else if (puedeAprobar(id)) {
+          el.classList.remove("bloqueada");
+          el.classList.remove("aprobada");
           el.removeAttribute("data-tooltip");
           el.style.pointerEvents = "auto";
         } else {
           el.classList.add("bloqueada");
+          el.classList.remove("aprobada");
           const faltantes = prereqsFaltantes(id).map(x => materiasData[x].nombre).join("\n");
           el.setAttribute("data-tooltip", `Faltan aprobar:\n${faltantes}`);
           el.style.pointerEvents = "none";
-          el.classList.remove("aprobada");
         }
-      }
-    });
-  }
-
-  semestres.forEach((listaMaterias, i) => {
-    const col = document.createElement("div");
-    col.className = "semestre";
-    col.innerHTML = `<h2>Semestre ${i+1}</h2>`;
-    listaMaterias.forEach(id => {
-      const div = document.createElement("div");
-      div.className = "materia";
-      div.dataset.id = id;
-      div.title = materiasData[id].nombre;
-      div.textContent = materiasData[id].nombre;
-      div.addEventListener("click", () => {
-        if (div.classList.contains("bloqueada")) return;
-        aprobado[id] = !aprobado[id];
-        localStorage.setItem("malla_aprobado_v1", JSON.stringify(aprobado));
-        actualizarUI();
       });
-      col.appendChild(div);
+    }
+
+    semestres.forEach((sem, i) => {
+      const col = document.createElement("div");
+      col.className = "semestre";
+      col.innerHTML = `<h2>Semestre ${i + 1}</h2>`;
+      sem.forEach(id => {
+        const div = document.createElement("div");
+        div.className = "materia";
+        div.dataset.id = id;
+        div.textContent = materiasData[id].nombre;
+        div.addEventListener("click", () => {
+          if (div.classList.contains("bloqueada")) return;
+          aprobado[id] = !aprobado[id];
+          localStorage.setItem("malla_aprobado_v1", JSON.stringify(aprobado));
+          actualizarUI();
+        });
+        col.appendChild(div);
+      });
+      mallaEl.appendChild(col);
     });
-    mallaEl.appendChild(col);
-  });
 
-  actualizarUI();
-})();
-</script>
-
+    actualizarUI();
+  </script>
 </body>
 </html>
